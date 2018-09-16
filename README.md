@@ -4,6 +4,7 @@
 - [Requirements](#requirements)
 - [Usage](#usage)
 - [Link](#link)
+- [Docs](#docs)
 
 ## Requirements
 - MavensMate
@@ -90,3 +91,22 @@ Setup完了後はSourcetreeを使って作業を行います。
 ## Link
 - [MavensMate](https://github.com/joeferraro/MavensMate)
 - [Sourcetree](https://ja.atlassian.com/software/sourcetree)
+
+## Docs
+### AccountSearch
+- 取引先を検索する画面。  
+- 取引先検索タブからアクセス。  
+  
+![AccountSearch](./docs/images/AccountSearch.png "AccountSearch")  
+
+
+### OppLineItemRegister
+- 商談に紐付く商談商品を新規作成するための画面。  
+- 商談詳細ページの商談商品作成ボタン(カスタムボタン)からアクセス。  
+  
+![OppLineItemRegister1](./docs/images/OppLineItemRegister1.png "OppLineItemRegister1")  
+  
+- 商品検索で表示された商品を選択し登録ボタンをクリックするとポップアップが表示されます。
+- ポップアップ内で入力後に保存ボタンをクリックすると商談商品が登録されます。
+  
+![OppLineItemRegister2](./docs/images/OppLineItemRegister2.png "OppLineItemRegister2")  
