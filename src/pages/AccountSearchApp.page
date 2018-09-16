@@ -1,0 +1,140 @@
+<apex:page showHeader="false" standardStylesheets="false">
+    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="slds-p-around_x-small">
+        <!-- ヘッダー -->
+        <header class="slds-page-header slds-m-bottom_small">
+            <div class="slds-grid">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <div class="slds-media slds-no-space slds-grow">
+                        <div class="slds-media__figure">
+                            <svg class="slds-icon slds-icon-standard-account" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/standard-sprite/svg/symbols.svg#account')}"></use>
+                            </svg>
+                        </div>
+                        <div class="slds-media__body">
+                            <p class="slds-text-title_caps slds-line-height_reset">
+                                <apex:outputText value="T.Yoshikawa Labs" />
+                            </p>
+                            <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate">
+                                <apex:outputText value="Account Search " />
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- コンテンツ -->
+        <div>
+            <!-- エラーメッセージ -->
+            <div class="slds-box slds-theme_error slds-m-top_small slds-m-bottom_small" ng-show="!!errorMessage.length">
+                <p><span ng-bind="errorMessage" class="textarea-view"></span></p>
+            </div>
+            <div>
+                <!-- 検索条件 -->
+                <div class="slds-m-bottom_medium slds-card slds-p-around_small">
+                    <div class="slds-form slds-form_compound">
+                        <fieldset class="slds-form-element">
+                            <legend class="slds-form-element__label slds-form-element__legend slds-text-title_caps"></legend>
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <!-- 取引先名 -->
+                                    <div class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label" for="accountName">
+                                            <apex:outputText value="{!$ObjectType.Account.Fields.Name.Label}" />
+                                        </label>
+                                        <input type="text" id="accountName" ng-model="accountName" class="slds-input" />
+                                    </div>
+                                    <!-- 都道府県 -->
+                                    <div class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label" for="accountBillingState">
+                                            <apex:outputText value="{!$ObjectType.Account.Fields.BillingState.Label}" />
+                                        </label>
+                                        <input type="text" id="accountBillingState" ng-model="accountBillingState" class="slds-input" />
+                                    </div>
+                                    <!-- スペース -->
+                                    <div class="slds-form-element slds-size_1-of-4"></div>
+                                    <!-- スペース -->
+                                    <div class="slds-form-element slds-size_1-of-4"></div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <button class="slds-button slds-button_brand" ng-click="search($event)" ng-disabled="isLocked">
+                            <span ng-bind="isLocked ? 'Searching...' : 'Search'"></span>
+                        </button>
+                    </div>
+                </div>
+                <!-- 検索結果 -->
+                <div class="slds-m-top_small">
+                    <h1 class="slds-m-bottom_small">
+                        COUNT：<span ng-bind="wrapper.accounts.length" />
+                    </h1>
+                    <table class="slds-table slds-table_bordered" cellpadding="0" cellspacing="0" border="0">
+                        <thead>
+                            <tr class="slds-text-heading_label">
+                                <th>
+                                    <!-- 取引先名 -->
+                                    <apex:outputText value="{!$ObjectType.Account.Fields.Name.Label}" />
+                                </th>
+                                <th>
+                                    <!-- 都道府県 -->
+                                    <apex:outputText value="{!$ObjectType.Account.Fields.BillingState.Label}" />
+                                </th>
+                                <th>
+                                    <!-- 市区郡 -->
+                                    <apex:outputText value="{!$ObjectType.Account.Fields.BillingCity.Label}" />
+                                </th>
+                                <th>
+                                    <!-- 町名・番地 -->
+                                    <apex:outputText value="{!$ObjectType.Account.Fields.BillingStreet.Label}" />
+                                </th>
+                                <th>
+                                    <!-- Web サイト -->
+                                    <apex:outputText value="{!$ObjectType.Account.Fields.Website.Label}" />
+                                </th>
+                                <th>
+                                    <!-- 所有者 -->
+                                    <apex:outputText value="{!$ObjectType.Account.Fields.OwnerId.Label}" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in wrapper.accounts | orderBy : 'Name'">
+                                <td>
+                                    <!-- 取引先名 -->
+                                    <a href="/{{item.Id}}" target="_blank">
+                                        <span ng-bind="item.Name" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <!-- 都道府県 -->
+                                    <span ng-bind="item.BillingState" />
+                                </td>
+                                <td>
+                                    <!-- 市区郡 -->
+                                    <span ng-bind="item.BillingCity" />
+                                </td>
+                                <td>
+                                    <!-- 町名・番地 -->
+                                    <span ng-bind="item.BillingStreet" />
+                                </td>
+                                <td>
+                                    <!-- Web サイト -->
+                                    <a href="{{item.Website}}" target="_blank">
+                                        <span ng-bind="item.Website" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <!-- 所有者 -->
+                                    <a href="/{{item.Owner.Id}}" target="_blank">
+                                        <span ng-bind="item.Owner.Name" />
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</apex:page>

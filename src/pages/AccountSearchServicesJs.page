@@ -1,0 +1,88 @@
+<apex:page >
+    <script type="text/javascript">
+        var app = angular.module("Services", []);
+
+        // AccountSearchAppServices
+        app.factory("AccountSearchAppServices", ["$rootScope", function($rootScope) {
+
+            // 初期処理
+            function init(scope) {
+                // Apex処理
+                AccountSearchController.init(
+                    function(result, event) {
+                        if(event.status) {
+                            // 結果をセット
+                            scope.wrapper = result;
+                            // エラー判定
+                            if (scope.wrapper.errorMessage) {
+                                scope.errorMessage = scope.wrapper.errorMessage;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+            }
+
+            // 検索処理
+            function search(scope) {
+                // 取引先名
+                var prmAccountName = getStringValue(scope.accountName);
+                // 都道府県
+                var prmAccountBillingState = getStringValue(scope.accountBillingState);
+                
+                // 取引先リスト初期化
+                scope.wrapper.accounts = [];
+
+                // Apex
+                AccountSearchController.getAccounts(
+                    prmAccountName,
+                    prmAccountBillingState,
+                    function(result, event) {
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            } else {
+                                // 取引先リスト取得
+                                scope.wrapper.accounts = result.accounts;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // ロック解除
+                        scope.isLocked = false;
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+            }
+
+            // 文字列値取得
+            function getStringValue(stringVal) {
+                var searchKey = '';
+                if (stringVal) {
+                    searchKey = stringVal;
+                }
+                return searchKey
+            }
+
+            return {
+                init: function(scope) {
+                    return init(scope);
+                },
+                search: function(scope) {
+                    return search(scope);
+                }
+            };
+        }]);
+    </script>
+</apex:page>

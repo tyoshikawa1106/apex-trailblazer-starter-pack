@@ -1,0 +1,243 @@
+<apex:page showHeader="false" standardStylesheets="false">
+    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="slds-p-around_x-small">
+        <!-- ヘッダー -->
+        <header class="slds-page-header slds-m-bottom_small">
+            <div class="slds-grid">
+                <div class="slds-col slds-has-flexi-truncate">
+                    <div class="slds-media slds-no-space slds-grow">
+                        <div class="slds-media__figure">
+                            <svg class="slds-icon slds-icon-standard-product-item" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/standard-sprite/svg/symbols.svg#product_item')}"></use>
+                            </svg>
+                        </div>
+                        <div class="slds-media__body">
+                            <p class="slds-text-title_caps slds-line-height_reset">
+                                <apex:outputText value="{!$ObjectType.Opportunity.Label}: " />
+                                <span ng-bind="wrapper.opportunity.Name" />
+                            </p>
+                            <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate">
+                                <apex:outputText value="{!$ObjectType.OpportunityLineItem.Label}登録" />
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-button-group" role="group">
+                    <button class="slds-button slds-button_neutral" ng-click="select($event)">
+                        <span>
+                            <apex:outputText value="選択した商品を登録" />
+                        </span>
+                    </button>
+                    <button class="slds-button slds-button_neutral" ng-click="cancel($event)">
+                        <span>前のページに戻る</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <!-- コンテンツ -->
+        <div>
+            <!-- エラーメッセージ -->
+            <div class="slds-box slds-theme_error slds-m-top_small slds-m-bottom_small" ng-show="!!errorMessage.length">
+                <p><span ng-bind="errorMessage" class="textarea-view"></span></p>
+            </div>
+            <div>
+                <!-- 検索条件 -->
+                <div class="slds-m-bottom_medium slds-card slds-p-around_small">
+                    <div class="slds-form slds-form_compound">
+                        <fieldset class="slds-form-element">
+                            <legend class="slds-form-element__label slds-form-element__legend slds-text-title_caps"></legend>
+                            <div class="slds-form-element__group">
+                                <div class="slds-form-element__row">
+                                    <div class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label" for="productName">商品名</label>
+                                        <input type="text" id="productName" ng-model="wrapper.productName" class="slds-input" />
+                                    </div>
+                                    <div class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label" for="productCode">商品コード</label>
+                                        <input type="text" id="productCode" ng-model="wrapper.productCode" class="slds-input" />
+                                    </div>
+                                    <div class="slds-form-element slds-size_1-of-4">
+                                        <label class="slds-form-element__label" for="productFamily">商品ファミリ</label>
+                                        <div class="slds-select_container">
+                                            <select id="productFamily" class="slds-select" ng-model="wrapper.productFamilySelect"
+                                                ng-options="num as name for (name,num) in wrapper.productFamilySelectItem">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element slds-size_1-of-4"></div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <button class="slds-button slds-button_brand" ng-click="search($event)">
+                            <span>検索</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- 検索結果 -->
+                <div class="slds-m-top_small">
+                    <h1 class="slds-m-bottom_small">
+                        商品件数：<span ng-bind="wrapper.productFields.length" />
+                    </h1>
+                    <table class="slds-table slds-table_bordered" cellpadding="0" cellspacing="0" border="0">
+                        <thead>
+                            <tr class="slds-text-heading_label">
+                                <th style="width: 60px;"></th>
+                                <th>
+                                    <apex:outputText value="{!$ObjectType.Product2.Fields.Name.Label}" />
+                                </th>
+                                <th>
+                                    <apex:outputText value="{!$ObjectType.Product2.Fields.ProductCode.Label}" />
+                                </th>
+                                <th>標準価格</th>
+                                <th>
+                                    <apex:outputText value="{!$ObjectType.Product2.Fields.Description.Label}" />
+                                </th>
+                                <th>
+                                    <apex:outputText value="{!$ObjectType.Product2.Fields.Family.Label}" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in wrapper.productFields">
+                                <td class="slds-text-align_center">
+                                    <span class="slds-checkbox">
+                                        <input type="checkbox" name="options" id="isChecked_{{item.product2.Id}}" ng-model="item.isChecked" />
+                                        <label class="slds-checkbox__label" for="isChecked_{{item.product2.Id}}">
+                                            <span class="slds-checkbox_faux"></span>
+                                        </label>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="/{{item.product2.Id}}" target="_blank">
+                                        <span ng-bind="item.product2.Name" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="/{{item.product2.Id}}" target="_blank">
+                                        <span ng-bind="item.product2.ProductCode" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <span ng-bind="item.pricebookEntry.UnitPrice | currency : '¥' :0" />
+                                </td>
+                                <td>
+                                    <span ng-bind="item.product2.Description" />
+                                </td>
+                                <td>
+                                    <span ng-bind="item.product2.Family" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- モーダル -->
+        <div class="modal-form" ng-show="isOpenModal">
+            <form name="inputForm" novalidate="true" class="slds-m-horizontal_small" id="vf-modal-form">
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" 
+                    aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_large">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" ng-click="closeModal($event)" autofocus="">
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xlink:href="{!URLFOR($Asset.SLDS, '/assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                                <apex:outputText value="{!$ObjectType.OpportunityLineItem.Label}" />
+                            </h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height: 450px;">
+                            <!-- エラーメッセージ -->
+                            <div class="slds-box slds-theme_error slds-m-top_small slds-m-bottom_small" ng-show="!!errorMessage.length">
+                                <p><span ng-bind="errorMessage" class="textarea-view"></span></p>
+                            </div>
+                            <h1 class="slds-m-bottom_small">
+                                商品件数：<span ng-bind="opportunityLineItemFieldList.length" />
+                            </h1>
+                            <div ng-repeat="item in opportunityLineItemFieldList">
+                                <div class="slds-section slds-is-open">
+                                    <h3 class="slds-section__title slds-theme_shade">
+                                        <span class="slds-truncate slds-p-horizontal_small" ng-bind="'商品名：' + item.productName"></span>
+                                    </h3>
+                                    <div aria-hidden="false" class="slds-section__content">
+                                        <div class="slds-p-around_small">
+                                            <div class="slds-form slds-form_compound">
+                                                <fieldset class="slds-form-element">
+                                                    <legend class="slds-form-element__label slds-form-element__legend slds-text-title_caps"></legend>
+                                                    <div class="slds-form-element__group">
+                                                        <div class="slds-form-element__row">
+                                                            <!-- 金額 -->
+                                                            <div class="slds-form-element slds-size_1-of-4" ng-class="{'slds-has-error': inputForm.unitPrice{{$index}}.$invalid && inputForm.unitPrice{{$index}}.$dirty}">
+                                                                <label class="slds-form-element__label">
+                                                                    <span class="slds-required" title="required">*</span>
+                                                                    <span>
+                                                                        <apex:outputText value="{!$ObjectType.OpportunityLineItem.Fields.UnitPrice.Label}" />
+                                                                    </span>
+                                                                </label>
+                                                                <input type="number" name="unitPrice{{$index}}" id="unitPrice{{$index}}" ng-model="item.opportunityLineItem.UnitPrice" class="slds-input" required="true" />
+                                                                <div ng-messages="inputForm['unitPrice' + $index].$error" ng-if="inputForm['unitPrice' + $index].$dirty">
+                                                                    <div ng-message="required" class="slds-form-element__help">必須項目です</div>
+                                                                    <div ng-message="number" class="slds-form-element__help">不正な形式です</div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- 数量 -->
+                                                            <div class="slds-form-element slds-size_1-of-4" ng-class="{'slds-has-error': inputForm.quantity{{$index}}.$invalid && inputForm.quantity{{$index}}.$dirty}">
+                                                                <label class="slds-form-element__label">
+                                                                    <span class="slds-required" title="required">*</span>
+                                                                    <span>
+                                                                        <apex:outputText value="{!$ObjectType.OpportunityLineItem.Fields.Quantity.Label}" />
+                                                                    </span>
+                                                                </label>
+                                                                <input type="number" name="quantity{{$index}}" id="quantity{{$index}}" ng-model="item.opportunityLineItem.Quantity" class="slds-input" required="true" />
+                                                                <div ng-messages="inputForm['quantity' + $index].$error" ng-if="inputForm['quantity' + $index].$dirty">
+                                                                    <div ng-message="required" class="slds-form-element__help">必須項目です</div>
+                                                                    <div ng-message="number" class="slds-form-element__help">不正な形式です</div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- 合計金額 -->
+                                                            <div class="slds-form-element slds-size_1-of-4">
+                                                                <label class="slds-form-element__label">
+                                                                    <span>
+                                                                        <apex:outputText value="{!$ObjectType.OpportunityLineItem.Fields.TotalPrice.Label}" />
+                                                                    </span>
+                                                                </label>
+                                                                <div>
+                                                                    <span ng-bind="item.opportunityLineItem.UnitPrice * item.opportunityLineItem.Quantity | currency : '¥' :0" />
+                                                                </div>
+                                                            </div>
+                                                            <!-- 提供日 -->
+                                                            <div class="slds-form-element slds-size_1-of-4" ng-class="{'slds-has-error': inputForm.serviceDate{{$index}}.$invalid && inputForm.serviceDate{{$index}}.$dirty}">
+                                                                <label class="slds-form-element__label" for="serviceDate{{$index}}">
+                                                                    <span>
+                                                                        <apex:outputText value="{!$ObjectType.OpportunityLineItem.Fields.ServiceDate.Label}" />
+                                                                    </span>
+                                                                </label>
+                                                                <input type="date" name="serviceDate{{$index}}" id="serviceDate{{$index}}" ng-model="item.serviceDate" class="slds-input" />
+                                                                <div ng-messages="inputForm['serviceDate' + $index].$error" ng-if="inputForm['serviceDate' + $index].$dirty">
+                                                                    <div ng-message="date" class="slds-form-element__help">不正な形式です</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer slds-modal__footer_directional">
+                            <button class="slds-button slds-button_neutral" ng-click="closeModal($event)">キャンセル</button>
+                            <button class="slds-button slds-button_brand" ng-click="save($event)" ng-disabled="inputForm.$invalid || isLocked">保存</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </form>
+        </div>
+    </div>
+</apex:page>

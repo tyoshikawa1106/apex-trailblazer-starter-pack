@@ -1,0 +1,224 @@
+<apex:page >
+    <script type="text/javascript">
+        var app = angular.module("Services", []);
+
+        // OppLineItemRegisterAppServices
+        app.factory("OppLineItemRegisterAppServices", ["$rootScope", function($rootScope) {
+            // 初期処理
+            function init(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // Apex処理
+                OppLineItemRegisterController.init(
+                    prmRecordId,
+                    function(results, event) {
+                        if(event.status) {
+                            // 結果をセット
+                            scope.wrapper = results;
+                            // エラー判定
+                            if (scope.wrapper.errorMessage) {
+                                scope.errorMessage = scope.wrapper.errorMessage;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+            }
+
+            // 検索処理
+            function search(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 商品名
+                var productName = getStringValue(scope.wrapper.productName);
+                // 商品コード
+                var productCode = getStringValue(scope.wrapper.productCode);
+                // 商品ファミリ
+                var productFamily = getStringValue(scope.wrapper.productFamilySelect);
+                // 商品リスト初期化
+                scope.wrapper.productFields = [];
+                // Apex
+                OppLineItemRegisterController.doSearch(
+                    prmRecordId,
+                    productName,
+                    productCode,
+                    productFamily,
+                    function(result, event) {
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            } else {
+                                // 商品リスト取得
+                                scope.wrapper.productFields = result.productFields;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+            }
+
+            // 商品選択
+            function selectProduct(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 商品リスト取得
+                var products = scope.wrapper.productFields;
+                // 選択済み商品のIDリスト取得
+                var checkedList = [];
+                for (var i = 0; i < products.length; i++) {
+                    if (products[i].isChecked) {
+                        checkedList.push(products[i].product2.Id);
+                    }
+                }
+                // エラー判定: 商品選択数 = 0
+                if (checkedList.length == 0) {
+                    scope.errorMessage = '商品が未選択です。';
+                    return false;
+                }
+                // エラー判定: 商品選択数 = 50
+                if (checkedList.length > 50) {
+                    scope.errorMessage = '一度に選択できるのは50件までです。';
+                    return false;
+                }
+                // Apex
+                OppLineItemRegisterController.doSelectProduct(
+                    prmRecordId,
+                    checkedList,
+                    function(result, event) {
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            } else {
+                                // 商品リスト取得
+                                scope.wrapper.opportunityLineItemFields = result.opportunityLineItemFields;
+                                // 入力フォーム用リスト
+                                scope.opportunityLineItemFieldList = [];
+                                // 変数に値をセット
+                                for (var i = 0; i < scope.wrapper.opportunityLineItemFields.length; i++) {
+                                    var obj = {
+                                        opportunity : scope.wrapper.opportunityLineItemFields[i].opportunity,
+                                        productName : scope.wrapper.opportunityLineItemFields[i].product2.Name,
+                                        serviceDate : new Date(scope.wrapper.opportunityLineItemFields[i].opportunityLineItem.ServiceDate),
+                                        opportunityLineItem : scope.wrapper.opportunityLineItemFields[i].opportunityLineItem
+                                    };
+                                    // リストに追加
+                                    scope.opportunityLineItemFieldList[i] = obj;
+                                }
+                            }
+                            // モーダルウィンドウを表示
+                            scope.isOpenModal = true;
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+
+
+                return false;
+            }
+
+            // 保存
+            function save(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 保存用リスト
+                var registerList = [];
+                // 変数に値をセット
+                for (var i = 0; i < scope.opportunityLineItemFieldList.length; i++) {
+                    // 商談商品情報セット
+                    var objOpportunityLineItem = scope.opportunityLineItemFieldList[i].opportunityLineItem;
+                    objOpportunityLineItem.ServiceDate = Date.parse(scope.opportunityLineItemFieldList[i].serviceDate);
+                    // リストに追加
+                    registerList[i] = objOpportunityLineItem;
+                }
+
+                // Apex
+                OppLineItemRegisterController.doSave(
+                    prmRecordId,
+                    registerList,
+                    function(result, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            } else {
+                                // 商談詳細ページに移動
+                                linkToBack(scope.recordId);
+                                return false;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+
+                return false;
+            }
+
+            // 画面遷移
+            function linkToBack(recordId) {
+                if (typeof sforce !== 'undefined' && sforce.one) {
+                    sforce.one.back(true);
+                } else {
+                    location.href = '/' + recordId;
+                }
+            }
+
+            // 文字列値取得
+            function getStringValue(stringVal) {
+                var searchKey = '';
+                if (stringVal) {
+                    searchKey = stringVal;
+                }
+                return searchKey
+            }
+
+            return {
+                init: function(scope) {
+                    return init(scope);
+                },
+                search: function(scope) {
+                    return search(scope);
+                },
+                linkToBack: function(recordId) {
+                  return linkToBack(recordId);
+                },
+                selectProduct: function(scope) {
+                    return selectProduct(scope);
+                },
+                save : function(scope) {
+                    return save(scope);
+                }
+            };
+        }]);
+    </script>
+</apex:page>

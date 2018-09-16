@@ -1,0 +1,42 @@
+<apex:page >
+    <script type="text/javascript">
+        "use strict";
+        
+        var app = angular.module("Controllers", ["Services"]);
+        var recordId = '';
+
+        // 例外処理
+        app.factory("$exceptionHandler", function () {
+            return function (exception, cause) {
+                console.log(exception.message);
+                var msg = "画面の処理中にエラーが発生しました。お手数ですがシステム管理者までご連絡ください。";
+                alert(msg);
+            };
+        });
+    
+        // AccountSearchAppController
+        app.controller("AccountSearchAppController", ["$scope", "$sce", "$routeParams", "AccountSearchAppServices", function($scope, $sce, $routeParams, services) {
+
+            // ロック解除
+            $scope.isLocked = false;
+            // 初期処理
+            services.init($scope);
+
+            // 検索
+            $scope.search = function(event) {
+                event.preventDefault();
+                // ロック
+                $scope.isLocked = true;
+                // メッセージクリア
+                clearMessage();
+                // 検索処理
+                services.search($scope);
+            };
+
+            // メッセージ初期化
+            function clearMessage() {
+                $scope.errorMessage = '';
+            };
+        }]);
+    </script>
+</apex:page>
