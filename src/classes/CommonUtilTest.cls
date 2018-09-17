@@ -442,4 +442,22 @@ private class CommonUtilTest {
             Test.stopTest();
         }
     }
+
+    /**
+     * 価格表ID取得
+     */
+    @isTest static void getPriceBook2IdTest() {
+        
+        System.runAs(testAdminUser) {
+
+            Pricebook2 pricebook2 = new Pricebook2();
+
+            Test.startTest();
+            
+            Id pricebook2Id = CommonUtil.getPriceBook2Id(pricebook2);
+            System.assertEquals(pricebook2Id, Test.getStandardPricebookId());
+            
+            Test.stopTest();
+        }
+    }
 }

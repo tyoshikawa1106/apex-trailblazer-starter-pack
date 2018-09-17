@@ -187,4 +187,11 @@ public with sharing class CommonUtil {
         
         return result;
     }
+
+    /**
+     * 価格表ID取得
+     */
+    public static Id getPriceBook2Id(Pricebook2 pricebook2) {
+        return Test.isRunningTest() ? Test.getStandardPricebookId() : pricebook2.Id;
+    }
 }

@@ -16,7 +16,7 @@ public with sharing class OpportunityTriggerHandler {
         // 標準価格表情報取得
         PriceBook2 priceBook2 = CommonDao.getStandardPriceBook2();
         // 標準価格表ID取得
-        Id pricebook2Id = Test.isRunningTest() ? Test.getStandardPricebookId() : pricebook2.Id;
+        Id pricebook2Id = CommonUtil.getPriceBook2Id(priceBook2);
         // 標準価格表と紐付け
         opportunities = this.helper.setPriceBook2Id(opportunities, pricebook2Id);
     }

@@ -63,7 +63,7 @@ public with sharing class OppLineItemRegisterController {
             // 標準価格表情報取得
             Pricebook2 pricebook2 = dao.getPricebook2();
             // 標準価格表ID取得
-            Id pricebook2Id = Test.isRunningTest() ? Test.getStandardPricebookId() : pricebook2.Id;
+            Id pricebook2Id = CommonUtil.getPriceBook2Id(priceBook2);
             // 標準価格表情報取得判定
             wrapper = helper.checkPricebook2Id(wrapper, pricebook2Id);
             // エラー判定
@@ -117,7 +117,7 @@ public with sharing class OppLineItemRegisterController {
             // 標準価格表情報取得
             Pricebook2 pricebook2 = dao.getPricebook2();
             // 標準価格表ID取得
-            Id pricebook2Id = Test.isRunningTest() ? Test.getStandardPricebookId() : pricebook2.Id;
+            Id pricebook2Id = CommonUtil.getPriceBook2Id(priceBook2);
             // 標準価格表情報取得判定
             wrapper = helper.checkPricebook2Id(wrapper, pricebook2Id);
             // エラー判定
