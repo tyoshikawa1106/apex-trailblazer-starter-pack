@@ -40,6 +40,8 @@ $ git reset --hard FETCH_HEAD
         <members>AccountSearchWrapperTest</members>
         <members>CommonConst</members>
         <members>CommonConstTest</members>
+        <members>CommonDao</members>
+        <members>CommonDaoTest</members>
         <members>CommonDate</members>
         <members>CommonDateTest</members>
         <members>CommonTester</members>
@@ -54,6 +56,10 @@ $ git reset --hard FETCH_HEAD
         <members>OppLineItemRegisterHelperTest</members>
         <members>OppLineItemRegisterWrapper</members>
         <members>OppLineItemRegisterWrapperTest</members>
+        <members>OpportunityTriggerHandler</members>
+        <members>OpportunityTriggerHandlerTest</members>
+        <members>OpportunityTriggerHelper</members>
+        <members>OpportunityTriggerHelperTest</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -68,6 +74,10 @@ $ git reset --hard FETCH_HEAD
         <members>OppLineItemRegisterControllerJs</members>
         <members>OppLineItemRegisterServicesJs</members>
         <name>ApexPage</name>
+    </types>
+    <types>
+        <members>OpportunityTrigger</members>
+        <name>ApexTrigger</name>
     </types>
     <types>
         <members>AngularJs</members>
