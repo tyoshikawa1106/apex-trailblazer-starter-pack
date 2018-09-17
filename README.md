@@ -99,6 +99,8 @@ Setup完了後はSourcetreeを使って作業を行います。
   
 ![AccountSearch](./docs/images/AccountSearch.png "AccountSearch")  
 
+[Force.com Demo #138 - SLDS Account Search](https://youtu.be/q2KygirmTRk)  
+  
 
 ### OppLineItemRegister
 - 商談に紐付く商談商品を新規作成するための画面。  
@@ -110,3 +112,6 @@ Setup完了後はSourcetreeを使って作業を行います。
 - ポップアップ内で入力後に保存ボタンをクリックすると商談商品が登録されます。
   
 ![OppLineItemRegister2](./docs/images/OppLineItemRegister2.png "OppLineItemRegister2")  
+  
+[Force.com Demo #139 - SLDS Opportunity Product Register](https://youtu.be/QeGngfcETEc)  
+  
