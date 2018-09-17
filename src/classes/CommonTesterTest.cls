@@ -200,4 +200,27 @@ private class CommonTesterTest {
             Test.stopTest();
         }
     }
+
+    /**
+     * ケース
+     */
+    @isTest static void createCaseTest() {
+        
+        System.runAs(testAdminUser) {
+            
+            Account account = CommonTester.createAccount(true);
+            
+            Test.startTest();
+            
+            // Insertなし
+            Case cs = CommonTester.createCase(account, false);
+            System.assertEquals(String.isEmpty(cs.Id), true);
+            
+            // Insertあり
+            cs = CommonTester.createCase(account, true);
+            System.assertEquals(String.isNotEmpty(cs.Id), true);
+            
+            Test.stopTest();
+        }
+    }
 }

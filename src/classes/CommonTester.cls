@@ -143,4 +143,22 @@ public with sharing class CommonTester {
         
         return opportunityLineItem;
     }
+
+    /**
+     * ケース
+     */
+    public static Case createCase(Account account, Boolean isInsert) {
+        
+        Case cs = new Case(
+             AccountId = account.Id
+            ,Status = 'New'
+            ,Origin = 'Web'
+        );
+        
+        if (isInsert) {
+            insert cs;
+        }
+        
+        return cs;
+    }
 }
