@@ -111,10 +111,16 @@
                                 scope.opportunityLineItemFieldList = [];
                                 // 変数に値をセット
                                 for (var i = 0; i < scope.wrapper.opportunityLineItemFields.length; i++) {
+                                    // 提供日の日付型変換
+                                    var targetServiceDate = undefined;
+                                    if (scope.wrapper.opportunityLineItemFields[i].opportunityLineItem.ServiceDate) {
+                                        targetServiceDate = new Date(scope.wrapper.opportunityLineItemFields[i].opportunityLineItem.ServiceDate);
+                                    }
+                                    // オブジェクト変数にセット
                                     var obj = {
                                         opportunity : scope.wrapper.opportunityLineItemFields[i].opportunity,
                                         productName : scope.wrapper.opportunityLineItemFields[i].product2.Name,
-                                        serviceDate : new Date(scope.wrapper.opportunityLineItemFields[i].opportunityLineItem.ServiceDate),
+                                        serviceDate : targetServiceDate,
                                         opportunityLineItem : scope.wrapper.opportunityLineItemFields[i].opportunityLineItem
                                     };
                                     // リストに追加
@@ -147,7 +153,11 @@
                 for (var i = 0; i < scope.opportunityLineItemFieldList.length; i++) {
                     // 商談商品情報セット
                     var objOpportunityLineItem = scope.opportunityLineItemFieldList[i].opportunityLineItem;
-                    objOpportunityLineItem.ServiceDate = Date.parse(scope.opportunityLineItemFieldList[i].serviceDate);
+                    // 提供日の日付型変換
+                    objOpportunityLineItem.ServiceDate = undefined;
+                    if (scope.opportunityLineItemFieldList[i].serviceDate) {
+                        objOpportunityLineItem.ServiceDate = Date.parse(scope.opportunityLineItemFieldList[i].serviceDate);
+                    }
                     // リストに追加
                     registerList[i] = objOpportunityLineItem;
                 }
