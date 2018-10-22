@@ -13,7 +13,7 @@ private class AccountSearchWrapperTest {
             Test.startTest();
             
             AccountSearchWrapper wrapper = new AccountSearchWrapper();
-            System.assertEquals(String.isEmpty(wrapper.errorMessage), true);
+            System.assertEquals(String.isEmpty(wrapper.errorMessage), true, wrapper.errorMessage);
             System.assertEquals(wrapper.accounts.isEmpty(), true);
             
             Test.stopTest();

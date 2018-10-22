@@ -23,7 +23,7 @@ private class OppLineItemRegisterHelperTest {
             wrapper = new OppLineItemRegisterWrapper();
             opportunityId = 'xxx';
             result = helper.checkOpportunityId(wrapper, opportunityId);
-            System.assertEquals(String.isEmpty(wrapper.errorMessage), true);
+            System.assertEquals(String.isEmpty(wrapper.errorMessage), true, wrapper.errorMessage);
             
             Test.stopTest();
         }
@@ -54,7 +54,7 @@ private class OppLineItemRegisterHelperTest {
             wrapper = new OppLineItemRegisterWrapper();
             product2ListSize = 1;
             result = helper.checkProduct2ListSize(wrapper, product2ListSize);
-            System.assertEquals(String.isEmpty(wrapper.errorMessage), true);
+            System.assertEquals(String.isEmpty(wrapper.errorMessage), true, wrapper.errorMessage);
             
             Test.stopTest();
         }
@@ -79,7 +79,7 @@ private class OppLineItemRegisterHelperTest {
             wrapper = new OppLineItemRegisterWrapper();
             pricebook2Id = 'xxx';
             result = helper.checkPricebook2Id(wrapper, pricebook2Id);
-            System.assertEquals(String.isEmpty(wrapper.errorMessage), true);
+            System.assertEquals(String.isEmpty(wrapper.errorMessage), true, wrapper.errorMessage);
             
             Test.stopTest();
         }
@@ -110,7 +110,7 @@ private class OppLineItemRegisterHelperTest {
             wrapper = new OppLineItemRegisterWrapper();
             pricebookEntryListSize = 1;
             result = helper.checkPricebookEntryListSize(wrapper, pricebookEntryListSize);
-            System.assertEquals(String.isEmpty(wrapper.errorMessage), true);
+            System.assertEquals(String.isEmpty(wrapper.errorMessage), true, wrapper.errorMessage);
             
             Test.stopTest();
         }

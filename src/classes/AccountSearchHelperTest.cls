@@ -29,7 +29,7 @@ private class AccountSearchHelperTest {
             wrapper = new AccountSearchWrapper();
             accountListSize = 1;
             wrapper = helper.checkAccountListSize(wrapper, accountListSize);
-            System.assertEquals(String.isEmpty(wrapper.errorMessage), true);
+            System.assertEquals(String.isEmpty(wrapper.errorMessage), true, wrapper.errorMessage);
             
             Test.stopTest();
         }
