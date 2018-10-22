@@ -59,7 +59,7 @@ private class OppLineItemRegisterControllerTest {
             
             Test.stopTest();
 
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
         }
     }
 
@@ -111,7 +111,7 @@ private class OppLineItemRegisterControllerTest {
             
             Test.stopTest();
 
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
         }
     }
 
@@ -159,7 +159,7 @@ private class OppLineItemRegisterControllerTest {
             
             Test.stopTest();
 
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
         }
     }
 
@@ -208,7 +208,7 @@ private class OppLineItemRegisterControllerTest {
             
             Test.stopTest();
 
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
         }
     }
 }

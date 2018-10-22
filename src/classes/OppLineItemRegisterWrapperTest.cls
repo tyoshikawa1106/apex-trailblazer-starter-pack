@@ -16,7 +16,7 @@ private class OppLineItemRegisterWrapperTest {
             
             Test.stopTest();
 
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
         }
     }
 

@@ -23,7 +23,7 @@ private class OppLineItemListHelperTest {
             wrapper = new OppLineItemListWrapper();
             opportunityId = 'xxxxxxxxxx';
             result = helper.checkOpportunityId(wrapper, opportunityId);
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
             
             Test.stopTest();
         }
@@ -48,7 +48,7 @@ private class OppLineItemListHelperTest {
             wrapper = new OppLineItemListWrapper();
             opportunityLineItemSize = 1;
             result = helper.checkOpportunityLineItemListSize(wrapper, opportunityLineItemSize);
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
             
             Test.stopTest();
         }
@@ -73,7 +73,7 @@ private class OppLineItemListHelperTest {
             wrapper = new OppLineItemListWrapper();
             isTestable = false;
             result = helper.checkIsUpdateableOpportunityLineItem(wrapper, isTestable);
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
             
             Test.stopTest();
         }
@@ -105,9 +105,9 @@ private class OppLineItemListHelperTest {
             // 未入力エラーなし
             wrapper = new OppLineItemListWrapper();
             opportunityLineItems = new List<OpportunityLineItem>();
-            opportunityLineItems.add(new OpportunityLineItem(UnitPrice = 1, Quantity = 1));
+            opportunityLineItems.add(new OpportunityLineItem(UnitPrice = 1, Quantity = null));
             result = helper.checkOpportunityLineItemRequiredFields(wrapper, opportunityLineItems);
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
             
             Test.stopTest();
         }
@@ -156,7 +156,7 @@ private class OppLineItemListHelperTest {
             wrapper = new OppLineItemListWrapper();
             isTestable = false;
             result = helper.checkIsDeletableOpportunityLineItem(wrapper, isTestable);
-            System.assertEquals(String.isEmpty(result.errorMessage), true);
+            System.assertEquals(String.isEmpty(result.errorMessage), true, result.errorMessage);
             
             Test.stopTest();
         }
