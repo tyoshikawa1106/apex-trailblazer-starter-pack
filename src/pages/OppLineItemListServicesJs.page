@@ -1,0 +1,348 @@
+<apex:page >
+    <script type="text/javascript">
+        var app = angular.module("Services", []);
+
+        // OppLineItemListAppServices
+        app.factory("OppLineItemListAppServices", ["$rootScope", function($rootScope) {
+            // 初期処理
+            function init(scope) {
+                // レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // Apex処理
+                OppLineItemListController.init(
+                    prmRecordId,
+                    function(results, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // 結果をセット
+                            scope.wrapper = results;
+                            // エラー判定
+                            if (scope.wrapper.errorMessage) {
+                                scope.errorMessage = scope.wrapper.errorMessage;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+            }
+
+            // 検索処理
+            function search(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 検索：商品名
+                var prmProductName = getStringValue(scope.productName);
+                // Apex処理
+                OppLineItemListController.doSearchOpportunityLineItem(
+                    prmRecordId,
+                    prmProductName,
+                    function(result, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // 結果をセット
+                            scope.wrapper.opportunityLineItemFields = result.opportunityLineItemFields;
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+            }
+
+            // 編集ウィンドウ表示
+            function openEditModal(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 商談商品リスト取得
+                var opportunityLineItems = scope.wrapper.opportunityLineItemFields;
+                // 選択済み商品のIDリスト取得
+                var checkedList = [];
+                for (var i = 0; i < opportunityLineItems.length; i++) {
+                    if (opportunityLineItems[i].isChecked) {
+                        checkedList.push(opportunityLineItems[i].opportunityLineItem.Id);
+                    }
+                }
+                // エラー判定: 選択数 = 0
+                if (checkedList.length == 0) {
+                    scope.errorMessage = '編集対象の商談商品が未選択です。';
+                    return false;
+                }
+                // エラー判定: 選択数 = 200
+                if (checkedList.length > 200) {
+                    scope.errorMessage = '一度に選択できるのは200件までです。';
+                    return false;
+                }
+                // モーダルウィンドウを表示
+                scope.isOpenEditModal = true;
+                // Apex
+                OppLineItemListController.doSelectEditOpportunityLineItem(
+                    prmRecordId,
+                    checkedList,
+                    function(result, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            } else {
+                                // 入力フォーム用リスト
+                                scope.editOppLineItemFieldList = [];
+                                // 変数に値をセット
+                                for (var i = 0; i < result.editOpportunityLineItemList.length; i++) {
+                                    // 提供日の日付型変換
+                                    var targetServiceDate = undefined;
+                                    if (result.editOpportunityLineItemList[i].ServiceDate) {
+                                        targetServiceDate = new Date(result.editOpportunityLineItemList[i].ServiceDate);
+                                    }
+                                    // オブジェクト変数にセット
+                                    var obj = {
+                                        // 提供日
+                                        serviceDate : targetServiceDate,
+                                        // 商談商品
+                                        opportunityLineItem : result.editOpportunityLineItemList[i]
+                                    };
+                                    // リストに追加
+                                    scope.editOppLineItemFieldList[i] = obj;
+                                }
+                            }
+                            // モーダルウィンドウを表示
+                            scope.isOpenEditModal = true;
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+
+                return false;
+            }
+
+            // 商談商品更新
+            function updateOpportunityLineItem(scope) {
+                // 保存用リスト
+                var registerList = [];
+                // 変数に値をセット
+                for (var i = 0; i < scope.editOppLineItemFieldList.length; i++) {
+                    // 商談商品情報セット
+                    var objOpportunityLineItem = scope.editOppLineItemFieldList[i].opportunityLineItem;
+                    // 提供日の日付型変換
+                    var targetServiceDate = undefined;
+                    if (scope.editOppLineItemFieldList[i].serviceDate) {
+                        targetServiceDate = Date.parse(scope.editOppLineItemFieldList[i].serviceDate);
+                    }
+                    objOpportunityLineItem.ServiceDate = targetServiceDate;
+                    // リストに追加
+                    registerList[i] = objOpportunityLineItem;
+                }
+
+                // Apex
+                OppLineItemListController.doUpdateOpportunityLineItem(
+                    registerList,
+                    function(result, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                                window.scrollTo(0, 0);
+                            } else {
+                                // 商談詳細ページに移動
+                                linkToBack(scope.recordId);
+                                return false;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+
+                return false;
+            }
+
+            // 削除ウィンドウ表示
+            function openDeletelModal(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 商談商品リスト取得
+                var opportunityLineItems = scope.wrapper.opportunityLineItemFields;
+                // 選択済み商品のIDリスト取得
+                var checkedList = [];
+                for (var i = 0; i < opportunityLineItems.length; i++) {
+                    if (opportunityLineItems[i].isChecked) {
+                        checkedList.push(opportunityLineItems[i].opportunityLineItem.Id);
+                    }
+                }
+                // エラー判定: 選択数 = 0
+                if (checkedList.length == 0) {
+                    scope.errorMessage = '削除対象の商談商品が未選択です。';
+                    return false;
+                }
+                // エラー判定: 選択数 = 200
+                if (checkedList.length > 200) {
+                    scope.errorMessage = '一度に選択できるのは200件までです。';
+                    return false;
+                }
+                // Apex
+                OppLineItemListController.doSelectDeleteOpportunityLineItem(
+                    prmRecordId,
+                    checkedList,
+                    function(result, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                            } else {
+                                // 削除用商談商品リスト取得
+                                scope.deleteOpportunityLineItemList = result.deleteOpportunityLineItemList;
+                            }
+                            // モーダルウィンドウを表示
+                            scope.isOpenDeleteModal = true;
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+
+                return false;
+            }
+
+            // 商談商品削除
+            function deleteOpportunityLineItem(scope) {
+                // 商談レコードID
+                var prmRecordId = getStringValue(scope.recordId);
+                // 削除IDリスト取得
+                var prmDeleteIds = [];
+                for (var i = 0; i < scope.deleteOpportunityLineItemList.length; i++) {
+                    prmDeleteIds.push(scope.deleteOpportunityLineItemList[i].Id);
+                }
+
+                // Apex
+                OppLineItemListController.doDeleteOpportunityLineItem(
+                    prmRecordId,
+                    prmDeleteIds,
+                    function(result, event) {
+                        // ロック解除
+                        scope.isLocked = false;
+                        // 処理ステータス判定
+                        if(event.status) {
+                            // エラーメッセージ取得
+                            var resultError = result.errorMessage;
+                            // エラー判定
+                            if (resultError) {
+                                scope.errorMessage = resultError;
+                                window.scrollTo(0, 0);
+                            } else {
+                                // 商談詳細ページに移動
+                                linkToBack(scope.recordId);
+                                return false;
+                            }
+                        } else {
+                            // エラーメッセージ
+                            scope.errorMessage = event.message;
+                        }
+                        // Viewに反映
+                        $rootScope.$apply();
+                    },
+                    { buffer: true, escape: false, timeout: 30000 }
+                );
+
+                return false;
+            }
+
+            // 商談商品の一括チェック
+            function allChecked(scope) {
+                for (var i = 0; i < scope.wrapper.opportunityLineItemFields.length; i++) {
+                    scope.wrapper.opportunityLineItemFields[i].isChecked = scope.isHeaderChecked;
+                }
+                return false;
+            }
+
+            // 画面遷移
+            function linkToBack(recordId) {
+                if (typeof sforce !== 'undefined' && sforce.one) {
+                    sforce.one.back(true);
+                } else {
+                    location.href = '/' + recordId;
+                }
+            }
+
+            // 文字列値取得
+            function getStringValue(stringVal) {
+                var searchKey = '';
+                if (stringVal) {
+                    searchKey = stringVal;
+                }
+                return searchKey
+            }
+
+            return {
+                init: function(scope) {
+                    return init(scope);
+                },
+                search: function(scope) {
+                    return search(scope);
+                },
+                openEditModal: function(scope) {
+                    return openEditModal(scope);
+                },
+                updateOpportunityLineItem: function(scope) {
+                    return updateOpportunityLineItem(scope);
+                },
+                openDeletelModal: function(scope) {
+                    return openDeletelModal(scope);
+                },
+                deleteOpportunityLineItem: function(scope) {
+                    return deleteOpportunityLineItem(scope);
+                },
+                linkToBack: function(recordId) {
+                    return linkToBack(recordId);
+                },
+                allChecked: function(scope) {
+                    return allChecked(scope);
+                }
+            };
+        }]);
+    </script>
+</apex:page>

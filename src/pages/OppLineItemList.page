@@ -1,0 +1,28 @@
+<apex:page standardController="Opportunity" extensions="OppLineItemListController" showHeader="true" sidebar="false" id="page" tabStyle="Opportunity">
+    <!-- AngularJS -->
+    <apex:includeScript value="{!URLFOR($Resource.AngularJs, 'libs/angular/angular.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.AngularJs, 'libs/angular-route/angular-route.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.AngularJs, 'libs/angular-messages/angular-messages.min.js')}" />
+    <!-- Lightning Design System -->
+    <apex:slds />
+    <!-- Css -->
+    <apex:stylesheet value="{!$Resource.CommonLexCss}" />
+    <!-- App -->
+    <div xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="vf-page">
+        <div class="slds-scope">
+            <div class="slds">
+                <!-- Content -->
+                <div ng-app="myApp">
+                    <div ng-view="true"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript -->
+    <apex:include pageName="OppLineItemListAppJs" />
+    <apex:include pageName="OppLineItemListControllerJs" />
+    <apex:include pageName="OppLineItemListServicesJs" />
+    <script type="text/javascript">
+        var recordId = '{!JSENCODE($CurrentPage.parameters.Id)}';
+    </script>
+</apex:page>

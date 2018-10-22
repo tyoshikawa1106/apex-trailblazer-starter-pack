@@ -1,0 +1,118 @@
+<apex:page >
+    <script type="text/javascript">
+        "use strict";
+        
+        var app = angular.module("Controllers", ["Services"]);
+
+        // 例外処理
+        app.factory("$exceptionHandler", function () {
+            return function (exception, cause) {
+                console.log(exception.message);
+                var msg = "画面の処理中にエラーが発生しました。お手数ですがシステム管理者までご連絡ください。";
+                alert(msg);
+            };
+        });
+    
+        // OppLineItemListAppController
+        app.controller("OppLineItemListAppController", ["$scope", "$sce", "$routeParams", "OppLineItemListAppServices", function($scope, $sce, $routeParams, services) {
+            // 商談レコードID
+            $scope.recordId = recordId;
+            // 検索：商品名
+            $scope.productName = '';
+            // ヘッダーチェック
+            $scope.isHeaderChecked = false;
+            // ロック判定
+            $scope.isLocked = false;
+            // 編集モーダル表示判定
+            $scope.isOpenEditModal = false;
+            // 削除モーダル表示判定
+            $scope.isOpenDeleteModal = false;
+
+            // 初期処理
+            services.init($scope);
+
+            // 検索
+            $scope.search = function(event) {
+                event.preventDefault();
+                // メッセージクリア
+                clearMessage();
+                // ヘッダーチェック
+                $scope.isHeaderChecked = false;
+                // ロック開始
+                $scope.isLocked = true;
+                // 検索処理
+                services.search($scope);
+            };
+
+            // モーダルクロース
+            $scope.closeModal = function(event) {
+                event.preventDefault();
+                // メッセージクリア
+                clearMessage();
+                // クローズ処理
+                $scope.isOpenEditModal = false;
+                $scope.isOpenDeleteModal = false;
+            };
+
+            // 編集ウィンドウ表示
+            $scope.openEditModal = function(event) {
+                event.preventDefault();
+                // メッセージクリア
+                clearMessage();
+                // 編集ウィンドウ表示
+                services.openEditModal($scope);
+            };
+
+            // 更新処理実行
+            $scope.updateOpportunityLineItem = function(event) {
+                event.preventDefault();
+                // メッセージクリア
+                clearMessage();
+                // ロック開始
+                $scope.isLocked = true;
+                // 更新処理実行
+                services.updateOpportunityLineItem($scope);
+            };
+
+            // 削除ウィンドウ表示
+            $scope.openDeletelModal = function(event) {
+                event.preventDefault();
+                // メッセージクリア
+                clearMessage();
+                // 削除ウィンドウ表示
+                services.openDeletelModal($scope);
+            };
+
+            // 削除処理実行
+            $scope.deleteOpportunityLineItem = function(event) {
+                event.preventDefault();
+                // メッセージクリア
+                clearMessage();
+                // ロック開始
+                $scope.isLocked = true;
+                // 削除処理実行
+                services.deleteOpportunityLineItem($scope);
+            };
+
+            // キャンセル
+            $scope.cancel = function(event) {
+                event.preventDefault();
+                // 前ページに戻る
+                services.linkToBack($scope.recordId);
+            };
+
+            // メッセージ初期化
+            function clearMessage() {
+                $scope.errorMessage = '';
+            };
+
+            // 一括チェック
+            $scope.allChecked = function(event) {
+                // メッセージクリア
+                clearMessage();
+                // 一括チェック
+                services.allChecked($scope);
+            }
+        }]);
+    </script>
+</apex:page>
